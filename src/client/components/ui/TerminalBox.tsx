@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Box, Flex } from '@chakra-ui/react';
 import { Terminal as XTerm } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
-import 'xterm/css/xterm.css';
+//import 'xterm/css/xterm.css';
 
 type TerminalProps = {
   sessionName: string;

@@ -1,3 +1,5 @@
+console.log('ENV LOADED:', process.env.SOME_EXPECTED_VAR);
+
 import { BASE } from '../common/constants';
 import express from 'express';
 import ViteExpress from 'vite-express';
@@ -8,12 +10,29 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 
 // TERMINAL
-import { setupTmuxWebSocket } from './tmuxSocket';
+//import { setupTmuxWebSocket } from './tmuxSocket';
 
-import { WebSocketServer } from 'ws';
+//import { WebSocketServer } from 'ws';
 
 import * as pty from 'node-pty';
 import * as http from 'http';
+
+// SSL
+import https from 'https';
+import fs from 'fs';
+ 
+
+
+
+(async () => {
+  try {
+    // your actual main code goes here
+  } catch (err) {
+    console.error('CRASH:', err);
+    process.exit(1);
+  }
+})();
+
 
 
 declare module 'express-session' {
@@ -78,7 +97,7 @@ const startServer = () => {
   const server = http.createServer(app);
 
   // Tmux WebSocket server
-  setupTmuxWebSocket(server);
+  //setupTmuxWebSocket(server);
 
   const port = parseInt(process.env.PORT ?? DEFAULT_PORT, BASE);
   const displayPort = new Intl.NumberFormat('en-US', {
@@ -110,6 +129,15 @@ const startServer = () => {
         },
       },
     },
+  });
+
+  const sslOptions = {
+    key: fs.readFileSync('./ssl/key.pem'),
+    cert: fs.readFileSync('./ssl/cert.pem'),
+  };
+
+  https.createServer(sslOptions, app).listen(3001, '0.0.0.0', () => {
+    console.log('✅ HTTPS Server is running at https://192.168.4.24:3001');
   });
 
 };
