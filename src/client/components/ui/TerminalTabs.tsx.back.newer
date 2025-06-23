@@ -1,0 +1,46 @@
+import { Tabs } from '@chakra-ui/react';
+import Terminal from './Terminal';
+import { useState } from 'react';
+import { LuFolder, LuSquareCheck, LuUser } from "react-icons/lu"
+
+
+const sessionTabs = ['one', 'two', 'three'];
+
+export default function TerminalTabs() {
+  const [activeTab, setActiveTab] = useState<string>(sessionTabs[0]);
+
+  return (
+    <Tabs.Root
+      defaultValue="one">
+
+      <Tabs.List>
+	<Tabs.Trigger value="one">
+	  <LuUser />
+	  One
+	</Tabs.Trigger>
+	<Tabs.Trigger value="two">
+	  <LuUser />
+	  Two
+	</Tabs.Trigger>
+	<Tabs.Trigger value="three">
+	  <LuUser />
+	  Three
+	</Tabs.Trigger>
+
+      </Tabs.List>
+
+      <Tabs.Content value="one">
+        <Terminal active="true" sessionName="one"/>
+      </Tabs.Content>
+
+      <Tabs.Content value="two">
+        <Terminal active="true" sessionName="two"/>
+      </Tabs.Content>
+
+      <Tabs.Content value="three">
+        <Terminal active="true" sessionName="three"/>
+      </Tabs.Content>
+
+    </Tabs.Root>
+  );
+}
