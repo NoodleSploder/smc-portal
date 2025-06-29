@@ -1,0 +1,24 @@
+/* Sidebar collapsible trigger styling */
+.collapsible-trigger {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+}
+
+.collapsible-trigger:hover {
+  text-decoration: underline;
+}
+
+.collapsible-trigger .chevron {
+  transition: transform 0.2s;
+}
+
+[data-state='open'] .chevron {
+  transform: rotate(90deg);
+}
+
+[data-state='closed'] .chevron {
+  transform: rotate(0deg);
+}

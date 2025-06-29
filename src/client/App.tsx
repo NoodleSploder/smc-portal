@@ -1,21 +1,29 @@
-import { ChakraProvider, Container, Box, Flex } from '@chakra-ui/react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-// Navigation
-import Navbar from './components/ui/nav-bar';
+// React
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import {  useSelector } from 'react-redux';
+import { RootState } from './components/data/store';
+
+// Layout, Navigation, Error handling
+import  Layout  from './components/ui/app-layout';
+import { LoadingSpinner } from './components/ui/loading-spinner';
+import { ErrorPage } from './components/ui/error-page';
 
 // Routes
 import About from './pages/About';
 import Home from './pages/Home';
 import PeopleSoft from './pages/PeopleSoft';
-import Mainframes from './pages/Mainframes';
+import CockpitPage from './pages/devops/cockpit';
+import DockerPage from './pages/devops/docker';
+import KubernetesPage from './pages/devops/kubernetes';
+import TerminalPage from './pages/devops/terminal';
 
-import TerminalPage from './pages/Terminal';
+//import TerminalPage from './pages/Terminal';
 
-import { ErrorPage } from './components/ui/error-page';
-import { LoadingSpinner } from './components/ui/loading-spinner';
-import {  useSelector } from 'react-redux';
-import { RootState } from './components/data/store';
+//MainFrames
+//import Mainframes from './pages/Mainframes';
+
+import ZOS31page from './pages/mainframes/zos/ZOS31Page';
 
 
 const App = () => {
@@ -26,20 +34,31 @@ const App = () => {
 
   return (
     <BrowserRouter>
-      <Navbar />
-      <Box 
-        fluid
-        height="calc(100vh - 80px)"
-	width="100%"
-      >
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/mainframes" element={<Mainframes />} />
-          <Route path="/peoplesoft" element={<PeopleSoft />} />    
-          <Route path="/terminal" element={<TerminalPage />} />
-          <Route path="/about" element={<About />} />
-        </Routes>
-      </Box>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          {/* All routes inside this Layout */}
+
+          {/* Home */}
+          <Route index element={<Home />} />
+
+          {/* PeopleSoft */}
+          <Route path="peoplesoft" element={<PeopleSoft />} />
+
+          {/* Mainframes */}
+          {/* <Route path="mainframes" element={<Mainframes />} /> */}
+          <Route path="mainframes/zos31" element={<ZOS31page />} />
+
+          {/* DevOps */}
+          <Route path="devops/cockpit" element={<CockpitPage />} />
+          <Route path="devops/docker" element={<DockerPage />} />
+          <Route path="devops/kubernetes" element={<KubernetesPage />} />
+          <Route path="devops/terminal" element={<TerminalPage />} />
+
+          {/* About */}
+          <Route path="about" element={<About />} />
+
+        </Route>
+      </Routes>
     </BrowserRouter>
   );
 };

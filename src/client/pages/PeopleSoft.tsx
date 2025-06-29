@@ -1,7 +1,7 @@
 //import { colorPalettes } from "compositions/lib/color-palettes"
-import { Stack, Card, Avatar, Button, For, SimpleGrid, Tabs } from "@chakra-ui/react"
-import { LuFolder, LuSquareCheck, LuUser } from "react-icons/lu"
-import { Box, Heading, Text } from '@chakra-ui/react';
+import { Stack, Card, Avatar, Button, } from "@chakra-ui/react"
+//import { LuFolder, LuSquareCheck, LuUser } from "react-icons/lu"
+import { Box, Heading } from '@chakra-ui/react';
 
 
 const PeopleSoft = () => {

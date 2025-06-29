@@ -1,8 +1,8 @@
 import { For, SimpleGrid, Tabs } from "@chakra-ui/react"
 import { LuFolder, LuSquareCheck, LuUser } from "react-icons/lu"
-import { Box, Heading, Text } from '@chakra-ui/react';
+import { Box, Heading} from '@chakra-ui/react';
 
-import ZOS31page from './zos-31/ZOS-31-page';
+import ZOS31page from './zos/ZOS31Page';
 
 const Mainframes = () => {
   return (
@@ -12,15 +12,15 @@ const Mainframes = () => {
       <SimpleGrid columns={2} gap="14" width="full">
         <For each={["line"]}>
           {(variant) => (
-            <Tabs.Root 
-	      key={variant} 
-              defaultValue="ibm-zos-31" 
+            <Tabs.Root
+	      key={variant}
+              defaultValue="ibm-zos-31"
               variant={variant}
               colorPalette="green"
             >
               <Tabs.List css={{ "--color": "colors.red.500" }}>
-                <Tabs.Trigger 
-		  value="ibm-zos-31" 
+                <Tabs.Trigger
+		  value="ibm-zos-31"
                   style={{ color: "teal" }}
                   _hover={{ color: "red.700" }}
                   _active={{ color: "aqua" }}
@@ -30,7 +30,7 @@ const Mainframes = () => {
                   <LuUser />
                   IBM z/OS 3.1
                 </Tabs.Trigger>
-                <Tabs.Trigger 
+                <Tabs.Trigger
                   value="ibm-aix"
                   style={{ color: "teal" }}
                   _hover={{ color: "red.700" }}
@@ -41,7 +41,7 @@ const Mainframes = () => {
                   <LuFolder />
                   IBM AIX v11
                 </Tabs.Trigger>
-                <Tabs.Trigger 
+                <Tabs.Trigger
                   value="settings"
                   style={{ color: "teal" }}
                   _hover={{ color: "red.700" }}
@@ -53,9 +53,9 @@ const Mainframes = () => {
                   Settings
                 </Tabs.Trigger>
               </Tabs.List>
-              <Tabs.Content 
+              <Tabs.Content
                 value="ibm-zos-31"
-                style={{ bg: "aqua" }}
+                style={{ }}
                 _active={{ bg: "aqua" }}
               >
 		<ZOS31page />

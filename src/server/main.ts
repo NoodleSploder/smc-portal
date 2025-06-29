@@ -8,21 +8,10 @@ import { ensureAuthenticated, setupAuthentication } from './authentication';
 import ejs from 'ejs';
 import { fileURLToPath } from 'url';
 import path from 'path';
-
-// TERMINAL
-//import { setupTmuxWebSocket } from './tmuxSocket';
-
-//import { WebSocketServer } from 'ws';
-
-import * as pty from 'node-pty';
 import * as http from 'http';
 
-// SSL
-import https from 'https';
-import fs from 'fs';
- 
-
-
+// TERMINAL
+import { setupTmuxWebSocket } from './tmuxSocket';
 
 (async () => {
   try {
@@ -97,47 +86,36 @@ const startServer = () => {
   const server = http.createServer(app);
 
   // Tmux WebSocket server
-  //setupTmuxWebSocket(server);
+  setupTmuxWebSocket(server);
 
   const port = parseInt(process.env.PORT ?? DEFAULT_PORT, BASE);
-  const displayPort = new Intl.NumberFormat('en-US', {
-    useGrouping: false,
-  }).format(port);
+  //const displayPort = new Intl.NumberFormat('en-US', {
+  //  useGrouping: false,
+  //}).format(port);
 
-
-
-  ViteExpress.bind(app, server);
+  ViteExpress.bind(app, server); // ✅ This attaches Vite dev server to your HTTP server.
 
   server.listen(port, () => {
-    console.log(`Server is listening on http://localhost:${port}`);
+    console.log(`Server listening on http://localhost:${port}`);
   });
 
-  ViteExpress.listen(app, port, () => {
+  //ViteExpress.listen(app, port, () => {
     // eslint-disable-next-line no-console
-    console.log(
-      `${process.env.NODE_ENV ?? ''} Server is listening on ${displayPort}.`
-    );
-  });
+  //  console.log(
+  //    `${process.env.NODE_ENV ?? ''} Server is listening on ${displayPort}.`
+  //  );
+  //});
 
   // Proxy WebSocket connections
   ViteExpress.config({
-    server: {
-      proxy: {
-        '/ws': {
-          target: 'ws://localhost:3000', // Proxy to your WebSocket server
-          ws: true,
-        },
-      },
-    },
-  });
-
-  const sslOptions = {
-    key: fs.readFileSync('./ssl/key.pem'),
-    cert: fs.readFileSync('./ssl/cert.pem'),
-  };
-
-  https.createServer(sslOptions, app).listen(3001, '0.0.0.0', () => {
-    console.log('✅ HTTPS Server is running at https://192.168.4.24:3001');
+    //server: {
+    //  proxy: {
+    //    '/wss': {
+    //      target: 'ws://localhost:3000', // Proxy to your WebSocket server
+    //      ws: true,
+    //    },
+    //  },
+    //},
   });
 
 };
