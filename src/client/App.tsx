@@ -17,12 +17,6 @@ import CockpitPage from './pages/devops/cockpit';
 import DockerPage from './pages/devops/docker';
 import KubernetesPage from './pages/devops/kubernetes';
 import TerminalPage from './pages/devops/terminal';
-
-//import TerminalPage from './pages/Terminal';
-
-//MainFrames
-//import Mainframes from './pages/Mainframes';
-
 import ZOS31page from './pages/mainframes/zos/ZOS31Page';
 
 

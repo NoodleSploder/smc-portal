@@ -11,11 +11,16 @@ import {
   Collapsible,
 } from '@chakra-ui/react';
 import { LuMenu, LuChevronRight } from 'react-icons/lu';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 
 const Layout: React.FC = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+
+  const location = useLocation();
+
+  // Check if URL starts with /peoplesoft
+  const isPeopleSoftOpen = location.pathname.startsWith('/peoplesoft');
 
   return (
     <Flex direction="column" h="100vh">
@@ -57,13 +62,34 @@ const Layout: React.FC = () => {
           >
             <VStack align="start" p={isSidebarOpen ? 4 : 0}>
               <Link to="/">Home</Link>
-              <Link to="/peoplesoft">PeopleSoft</Link>
+
+              <Collapsible.Root defaultOpen={isPeopleSoftOpen} open={isPeopleSoftOpen}>
+
+                <Collapsible.Trigger className="collapsible-trigger">
+                  <Flex align="center" gap="2" >
+                    <LuChevronRight className="chevron" />
+                    <Link to="/peoplesoft">PeopleSoft</Link>
+                  </Flex>
+                </Collapsible.Trigger>
+
+                <Collapsible.Content>
+                  <VStack align="start" pl={4}>
+                    <Link to="/peoplesoft/interaction-hub">Interaction Hub</Link>
+                    <Link to="/peoplesoft/campus-solutions">Campus Solutions</Link>
+                    <Link to="/peoplesoft/hcm">Human Capital Mgmt</Link>
+                    <Link to="/peoplesoft/financials">Financials</Link>
+                    <Link to="/peoplesoft/customer-relationship-management">Customer Relationship Mgmt</Link>
+                  </VStack>
+                </Collapsible.Content>
+              </Collapsible.Root>
 
               {/* Collapsible Mainframes */}
-              <Collapsible.Root defaultOpen>
+              <Collapsible.Root >
                 <Collapsible.Trigger className="collapsible-trigger">
-                  <Text>Mainframes</Text>
-                  <Box as={LuChevronRight} className="chevron" />
+                  <Flex align="center" gap="2">
+                    <LuChevronRight className="chevron" />
+                    <Text>Mainframes</Text>
+                  </Flex>
                 </Collapsible.Trigger>
 
                 <Collapsible.Content>
@@ -76,10 +102,12 @@ const Layout: React.FC = () => {
               </Collapsible.Root>
 
               {/* Collapsible DevOps */}
-              <Collapsible.Root defaultOpen>
+              <Collapsible.Root >
                 <Collapsible.Trigger className="collapsible-trigger">
-                  <Text>DevOps</Text>
-                  <Box as={LuChevronRight} className="chevron" />
+                  <Flex align="center" gap="2">
+                    <LuChevronRight className="chevron" />
+                    <Text>DevOps</Text>
+                  </Flex>
                 </Collapsible.Trigger>
 
                 <Collapsible.Content>
@@ -91,12 +119,12 @@ const Layout: React.FC = () => {
                     <a href="https://rancher.somanychickens.com" target="_blank" rel="noopener noreferrer">
                       Kubernetes
                     </a>
-
                     <Link  to="/devops/terminal">Terminal</Link>
                   </VStack>
                 </Collapsible.Content>
               </Collapsible.Root>
-
+              <Link  to="/tools/sagemath">Sage Math</Link>
+              <Link  to="/tools/jupyter">Jupyter</Link>
               <Link  to="/about">About</Link>
             </VStack>
           </Box>

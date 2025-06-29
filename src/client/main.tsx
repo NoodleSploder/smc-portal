@@ -7,8 +7,6 @@ import { UIProvider } from './components/ui/ui-provider';
 import { store } from './components/data/store';
 import { ErrorPage } from './components/ui/error-page';
 import './index.css';
-// main.tsx
-//import 'xterm/css/xterm.css';
 
 export const ErrorFallback = ({ error }: FallbackProps) => (
   <ErrorPage message={error.message} />
