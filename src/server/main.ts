@@ -6,9 +6,10 @@ import ViteExpress from 'vite-express';
 import session from 'express-session';
 import { ensureAuthenticated, setupAuthentication } from './authentication';
 import ejs from 'ejs';
+import * as http from 'http';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import * as http from 'http';
+import fs from 'fs/promises';
 
 // TERMINAL
 import { setupTmuxWebSocket } from './tmuxSocket';
@@ -43,10 +44,10 @@ const setupMiddleware = (app: express.Application) => {
   app.engine('html', (path, data, cb) => {
     ejs.renderFile(path, data, {}, (err, str) => {
       if (err) {
-        cb(err);
+        cb('yoohoo1' + err);
         return undefined;
       }
-      cb(null, str);
+      cb(null, 'yoohoo2' + str);
     });
   });
   app.set('views', `${__dirname}/pages`);
@@ -65,6 +66,7 @@ const setupMiddleware = (app: express.Application) => {
 };
 
 const setupRoutes = (app: express.Application) => {
+
   // page routes
   app.get('/', ensureAuthenticated, (_, __, next) => {
     next(); // pass to Vite
@@ -74,6 +76,46 @@ const setupRoutes = (app: express.Application) => {
   app.get('/key', ensureAuthenticated, (_, res) => {
     res.send({ key: process.env.LOCAL_STORAGE_KEY });
   });
+
+  const BASE_DIR = '/gundam_hd_sdb1/STL_1'; // Absolute path
+
+  // FILE BROWSER ROUTES
+  app.get('/api/browse', async (req, res) => {
+    const subPath = typeof req.query.path === 'string' ? req.query.path : '';
+    const targetPath = path.join(BASE_DIR, subPath);
+
+    console.log('subPath: ' + subPath);
+    console.log('targetPath: ' + targetPath);
+
+    // Protect from directory traversal
+    if (!targetPath.startsWith(BASE_DIR)) {
+      return res.status(400).json({ error: 'Invalid path' });
+    }
+
+    try {
+      const entries = await fs.readdir(targetPath, { withFileTypes: true });
+      const listing = entries.map((e) => ({
+        name: e.name,
+        type: e.isDirectory() ? 'directory' : 'file',
+      }));
+      res.json({ path: subPath, listing });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to read directory' });
+    }
+  });
+
+  // Download endpoint
+  app.get('/api/download', (req, res) => {
+    const subPath = typeof req.query.path === 'string' ? req.query.path : '';
+    const filePath = path.join(BASE_DIR, subPath);
+
+    if (!filePath.startsWith(BASE_DIR)) {
+      return res.status(400).send('Invalid path');
+    }
+    res.download(filePath);
+  });
+
 };
 
 const startServer = () => {

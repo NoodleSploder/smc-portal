@@ -9,7 +9,7 @@ import { ErrorPage } from './components/ui/error-page';
 import './index.css';
 
 export const ErrorFallback = ({ error }: FallbackProps) => (
-  <ErrorPage message={error.message} />
+  <ErrorPage message={'Whacked: ' + error.message} />
 );
 
 const renderApp = (container: HTMLElement) => {

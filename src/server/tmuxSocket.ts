@@ -37,8 +37,8 @@ export function setupTmuxWebSocket(server: http.Server) {
 
     const ptyProcess: IPty = pty.spawn('tmux', ['attach-session', '-t', sessionName], {
       name: 'xterm-color',
-      cols: 120,
-      rows: 65,
+      cols: 100,
+      rows: 100,
       cwd: process.env.HOME,
       env: process.env,
     });
@@ -58,12 +58,13 @@ export function setupTmuxWebSocket(server: http.Server) {
 
         console.log("WS Data: " + JSON.stringify(data));
 
-        if (data.resize && data.resize.cols && data.resize.rows) {
-          ptyProcess.resize(data.resize.cols, 20 );
-          console.log(`[${sessionName}] Resizing to cols=${data.resize.cols}, rows=${data.resize.rows}`);
+        if (data.size && data.size.cols && data.size.rows) {
+          ptyProcess.resize(data.size.cols, data.size.rows  );
+          console.log(`[${sessionName}] Resizing to cols=${data.size.cols}, rows=${data.size.rows}`);
         } else if (data.input) {
           ptyProcess.write(data.input);
         } else {
+          // THIS IS REPORTING
           console.log(`[${sessionName}] Unhandled message:`, data);
         }
 

@@ -10,24 +10,39 @@ const PeopleSoft = () => {
       <Heading>PeopleSoft Environments<br/></Heading>
       <br/>
       <Stack gap="4" direction="row" wrap="wrap">
+
+        {/* INTERACTION HUB */}
         <Card.Root width="320px" variant="elevated">
           <Card.Body gap="2" bg="purple.300">
             <Avatar.Root size="lg" shape="rounded">
               <Avatar.Image src="https://picsum.photos/200/300" />
               <Avatar.Fallback name="IHUB 9.2" />
             </Avatar.Root>
+
             <Card.Title mb="2">PeopleSoft<br/>Interaction Hub <br/>9.1</Card.Title>
-            <Card.Description>
-	      PeopleSoft <br/>Interaction Hub 9.1
-            </Card.Description>
+            <Card.Description>PeopleSoft <br/>Interaction Hub 9.1</Card.Description>
+
+            {/* LAUNCH BUTTON */}
             <Button
               style={{ color: "chartreuse" }}
               asChild
             >
               <a target="_blank" rel="noopener noreferrer" href="https://ihub.somanychickens.com" >Launch</a>
             </Button>
+
           </Card.Body>
+
           <Card.Footer justifyContent="flex-end"  bg="purple.700">
+
+            {/* WL CONSOLE BUTTON */}
+            <Button variant="ghost"
+              style={{ marginTop: "11px", marginBottom: "-12px", color: "chartreuse" }}
+              asChild
+            >
+              <a href="#">WebLogic Console</a>
+            </Button>
+
+            {/* ADMIN BUTTON */}
             <Button variant="ghost"
               style={{ marginTop: "11px", marginBottom: "-12px", color: "chartreuse" }}
               asChild
@@ -37,6 +52,7 @@ const PeopleSoft = () => {
           </Card.Footer>
         </Card.Root>
 
+        {/* CAMPUS SOLUTIONS */}
         <Card.Root width="320px" variant="elevated">
           <Card.Body gap="2" bg="purple.300">
             <Avatar.Root size="lg" shape="rounded">
@@ -55,12 +71,23 @@ const PeopleSoft = () => {
             </Button>
           </Card.Body>
           <Card.Footer justifyContent="flex-end"  bg="purple.700">
+
+            {/* WL CONSOLE BUTTON */}
+            <Button variant="ghost"
+              style={{ marginTop: "11px", marginBottom: "-12px", color: "chartreuse" }}
+              asChild
+            >
+              <a href="#">WebLogic Console</a>
+            </Button>
+
+            {/* ADMIN BUTTON */}
             <Button variant="ghost"
               style={{ marginTop: "11px", marginBottom: "-12px", color: "chartreuse" }}
             >Admin</Button>
           </Card.Footer>
         </Card.Root>
 
+        {/* HUMAN CAPITAL MANAGEMENT */}
         <Card.Root width="320px" variant="elevated">
           <Card.Body gap="2" bg="purple.300">
             <Avatar.Root size="lg" shape="rounded">
@@ -77,12 +104,23 @@ const PeopleSoft = () => {
 
           </Card.Body>
           <Card.Footer justifyContent="flex-end"  bg="purple.700">
+
+            {/* WL CONSOLE BUTTON */}
+            <Button variant="ghost"
+              style={{ marginTop: "11px", marginBottom: "-12px", color: "chartreuse" }}
+              asChild
+            >
+              <a href="#">WebLogic Console</a>
+            </Button>
+
+            {/* ADMIN BUTTON */}
             <Button variant="ghost"
               style={{ marginTop: "11px", marginBottom: "-12px", color: "chartreuse" }}
             >Admin</Button>
           </Card.Footer>
         </Card.Root>
 
+        {/* FINANCIAL / SUPPLY CHAIN MANAGEMENT */}
         <Card.Root width="320px" variant="elevated">
           <Card.Body gap="2" bg="purple.300">
             <Avatar.Root size="lg" shape="rounded">
@@ -99,6 +137,16 @@ const PeopleSoft = () => {
 
           </Card.Body>
           <Card.Footer justifyContent="flex-end"  bg="purple.700">
+
+            {/* WL CONSOLE BUTTON */}
+            <Button variant="ghost"
+              style={{ marginTop: "11px", marginBottom: "-12px", color: "chartreuse" }}
+              asChild
+            >
+              <a href="#">WebLogic Console</a>
+            </Button>
+
+            {/* ADMIN BUTTON */}
             <Button variant="ghost"
               style={{ marginTop: "11px", marginBottom: "-12px", color: "chartreuse" }}
             >Admin</Button>
@@ -106,6 +154,7 @@ const PeopleSoft = () => {
         </Card.Root>
 
 
+        {/* CUSTOMER RELATIONSHIP MANAGEMENT */}
         <Card.Root width="320px" variant="elevated">
           <Card.Body gap="2" bg="purple.300">
             <Avatar.Root size="lg" shape="rounded">
@@ -123,6 +172,16 @@ const PeopleSoft = () => {
             </Button>
           </Card.Body>
           <Card.Footer justifyContent="flex-end"  bg="purple.700">
+
+            {/* WL CONSOLE BUTTON */}
+            <Button variant="ghost"
+              style={{ marginTop: "11px", marginBottom: "-12px", color: "chartreuse" }}
+              asChild
+            >
+              <a href="#">WebLogic Console</a>
+            </Button>
+
+            {/* ADMIN BUTTON */}
             <Button variant="ghost"
               style={{ marginTop: "11px", marginBottom: "-12px", color: "chartreuse" }}
               asChild>
@@ -130,6 +189,43 @@ const PeopleSoft = () => {
             </Button>
           </Card.Footer>
         </Card.Root>
+
+       {/* ENTERPRISE LEARNING MANAGEMENT */}
+        <Card.Root width="320px" variant="elevated">
+          <Card.Body gap="2" bg="purple.300">
+            <Avatar.Root size="lg" shape="rounded">
+              <Avatar.Image src="https://picsum.photos/200/300" />
+              <Avatar.Fallback name="ELM 9.2" />
+            </Avatar.Root>
+            <Card.Title mb="2">PeopleSoft<br/>Enterprise Learning Mgmt <br/>9.2</Card.Title>
+            <Card.Description>
+              PeopleSoft <br/> Enterprise Learning Management 9.2
+            </Card.Description>
+            <Button
+              style={{ color: "chartreuse" }}
+              asChild>
+              <a href="#">Launch</a>
+            </Button>
+          </Card.Body>
+          <Card.Footer justifyContent="flex-end"  bg="purple.700">
+
+            {/* WL CONSOLE BUTTON */}
+            <Button variant="ghost"
+              style={{ marginTop: "11px", marginBottom: "-12px", color: "chartreuse" }}
+              asChild
+            >
+              <a href="#">WebLogic Console</a>
+            </Button>
+
+            {/* ADMIN BUTTON */}
+            <Button variant="ghost"
+              style={{ marginTop: "11px", marginBottom: "-12px", color: "chartreuse" }}
+              asChild>
+              <a href="#">Admin</a>
+            </Button>
+          </Card.Footer>
+        </Card.Root>
+
       </Stack>
     </Box>
   );

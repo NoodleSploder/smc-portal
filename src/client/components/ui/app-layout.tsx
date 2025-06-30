@@ -61,29 +61,33 @@ const Layout: React.FC = () => {
             transition="width 0.3s ease"
           >
             <VStack align="start" p={isSidebarOpen ? 4 : 0}>
+
+              {/* Home */}
               <Link to="/">Home</Link>
 
+              {/* PeopleSoft Menu */}
               <Collapsible.Root defaultOpen={isPeopleSoftOpen} open={isPeopleSoftOpen}>
-
                 <Collapsible.Trigger className="collapsible-trigger">
                   <Flex align="center" gap="2" >
                     <LuChevronRight className="chevron" />
                     <Link to="/peoplesoft">PeopleSoft</Link>
                   </Flex>
                 </Collapsible.Trigger>
-
                 <Collapsible.Content>
                   <VStack align="start" pl={4}>
-                    <Link to="/peoplesoft/interaction-hub">Interaction Hub</Link>
-                    <Link to="/peoplesoft/campus-solutions">Campus Solutions</Link>
-                    <Link to="/peoplesoft/hcm">Human Capital Mgmt</Link>
-                    <Link to="/peoplesoft/financials">Financials</Link>
-                    <Link to="/peoplesoft/customer-relationship-management">Customer Relationship Mgmt</Link>
+
+                    {/* Sub Menu Links */}
+                    <Link to="/peoplesoft/interaction-hub">     Interaction Hub     </Link>
+                    <Link to="/peoplesoft/campus-solutions">    Campus Solutions    </Link>
+                    <Link to="/peoplesoft/hcm">                 HCM                 </Link>
+                    <Link to="/peoplesoft/fin">                 FIN / SCM           </Link>
+                    <Link to="/peoplesoft/crm">                 CRM                 </Link>
+
                   </VStack>
                 </Collapsible.Content>
               </Collapsible.Root>
 
-              {/* Collapsible Mainframes */}
+              {/* Mainframes Menu */}
               <Collapsible.Root >
                 <Collapsible.Trigger className="collapsible-trigger">
                   <Flex align="center" gap="2">
@@ -91,17 +95,20 @@ const Layout: React.FC = () => {
                     <Text>Mainframes</Text>
                   </Flex>
                 </Collapsible.Trigger>
-
                 <Collapsible.Content>
                   <VStack align="start" pl={4} py={2}>
-                    <Link to="/mainframes/zos31">IBM z/OS 3.1</Link>
-                    <Link  to="/mainframes/aix">IBM AIX</Link>
-                    <Link to="/mainframes/hercules">Hercules</Link>
+
+                    {/* Sub Menu Links */}
+                    <Link  to="/mainframes/zos31">    IBM z/OS 3.1 </Link>
+                    <Link  to="/mainframes/aix">      IBM AIX      </Link>
+                    <Link  to="/mainframes/mvs38">    MVS 3.8 TK4j </Link>
+                    <Link  to="/mainframes/hercules"> Hercules     </Link>
+
                   </VStack>
                 </Collapsible.Content>
               </Collapsible.Root>
 
-              {/* Collapsible DevOps */}
+              {/* DevOps Menu */}
               <Collapsible.Root >
                 <Collapsible.Trigger className="collapsible-trigger">
                   <Flex align="center" gap="2">
@@ -109,23 +116,37 @@ const Layout: React.FC = () => {
                     <Text>DevOps</Text>
                   </Flex>
                 </Collapsible.Trigger>
-
                 <Collapsible.Content>
                   <VStack align="start" pl={4} py={2}>
-                    <Link  to="/devops/cockpit">Cockpit</Link>
-                    <Link  to="/devops/lxd">LXD</Link>
-                    <Link  to="/devops/docker">Docker</Link>
-                    {/* External link: plain <a> */}
+
+                    {/* Sub Menu Links */}
+                    <Link  to="/devops/cockpit">  Cockpit </Link>
+                    <Link  to="/devops/lxd">      LXD     </Link>
+                    <Link  to="/devops/docker">   Docker  </Link>
+
+                    {/* Kubernetes - External link: plain <a> */}
                     <a href="https://rancher.somanychickens.com" target="_blank" rel="noopener noreferrer">
                       Kubernetes
                     </a>
+
+                    {/* Terminal */}
                     <Link  to="/devops/terminal">Terminal</Link>
+
                   </VStack>
                 </Collapsible.Content>
               </Collapsible.Root>
+
+              {/* Sage Math */}
               <Link  to="/tools/sagemath">Sage Math</Link>
+
+              {/* Jupyter */}
               <Link  to="/tools/jupyter">Jupyter</Link>
+
+              <Link to="/stl">📁 File Browser - STL 1</Link>
+
+              {/* About */}
               <Link  to="/about">About</Link>
+
             </VStack>
           </Box>
 

@@ -15,64 +15,49 @@ export default function TerminalBox({ sessionName }: TerminalProps) {
   const socketRef = useRef<WebSocket | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
-  const rows = 80;
-
-  useEffect(() => {
-    if (!terminalRef.current) return;
-
-
-  const term = new XTerm({
-    cols: 100,
-    rows: rows,
-    cursorBlink: true,
-    theme: {
-      background: '#1a202c',
-      foreground: '#f8f8f2',
-      black: '#000000',
-      white: '#ffffff',
-      brightGreen: '#50fa7b',
-      brightBlue: '#8be9fd',
-      brightYellow: '#f1fa8c',
-    },
-  });
-
   const resizeTerminal = () => {
     if (!terminalRef.current || !xterm.current || !fitAddon.current) return;
 
     fitAddon.current.fit();
-
     const dims = fitAddon.current.proposeDimensions();
-
     if (dims) {
-      xterm.current.resize(dims.cols, rows);
+      xterm.current.resize(dims.cols, dims.rows);
 
       if (socketRef.current?.readyState === WebSocket.OPEN) {
         socketRef.current.send(JSON.stringify({ resize: dims }));
+      } else {
+        console.warn(`[${sessionName}] WebSocket not ready`);
       }
     }
   };
 
+  useEffect(() => {
+    if (!terminalRef.current) return;
+
+    const term = new XTerm({
+      cols: 100,
+      rows: 100,
+      cursorBlink: true,
+      theme: { background: '#1a202c' }
+    });
+
     const fit = new FitAddon();
+
     term.loadAddon(fit);
+    fit.fit();
 
     xterm.current = term;
     fitAddon.current = fit;
 
     term.open(terminalRef.current);
+    resizeTerminal();
 
-    // Ensure the first fit happens AFTER DOM paint
-    requestAnimationFrame(() => {
-      fit.fit();
-      resizeTerminal();
-    });
-
-    // Setup WebSocket
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const socket = new WebSocket(`${protocol}://${window.location.host}/ws?session=${sessionName}`);
     socketRef.current = socket;
 
     socket.onopen = () => {
-      term.write('\r\nWS Connected\r\n');
+      term.writeln('\r\n[WS Connected]');
       resizeTerminal();
       term.focus();
     };
@@ -82,7 +67,7 @@ export default function TerminalBox({ sessionName }: TerminalProps) {
     };
 
     socket.onclose = () => {
-      term.write('\r\n[Disconnected]');
+      term.writeln('\r\n[Disconnected]');
     };
 
     term.onData(data => {
@@ -93,17 +78,14 @@ export default function TerminalBox({ sessionName }: TerminalProps) {
 
     // ResizeObserver
     const observer = new ResizeObserver(() => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          resizeTerminal();
-        });
-      });
+      console.log(`[${sessionName}] ResizeObserver triggered`);
+      resizeTerminal();
     });
 
     observer.observe(terminalRef.current);
     resizeObserverRef.current = observer;
 
-    // Window resize fallback
+    // window resize fallback
     const handleWindowResize = () => resizeTerminal();
     window.addEventListener('resize', handleWindowResize);
 
@@ -116,18 +98,12 @@ export default function TerminalBox({ sessionName }: TerminalProps) {
   }, [sessionName]);
 
   return (
-    <Box display="flex" flex="1" width="100%" height="1360px" minH="1360px">
-      <Box
-        ref={terminalRef}
+    <Box
+      ref={terminalRef}
         flex="1"
         width="100%"
-        height="1360px"
-        minH="1360px"
+        height="100%"
         overflow="hidden"
-        style={{
-          backgroundColor: "black",
-        }}
-      />
-    </Box>
+    />
   );
 }

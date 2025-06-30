@@ -18,6 +18,9 @@ import DockerPage from './pages/devops/docker';
 import KubernetesPage from './pages/devops/kubernetes';
 import TerminalPage from './pages/devops/terminal';
 import ZOS31page from './pages/mainframes/zos/ZOS31Page';
+import SageMath from './pages/tools/sagemath';
+import Jupyter from './pages/tools/jupyter';
+import FileBrowserPage from './components/ui/FileBrowserPage';
 
 
 const App = () => {
@@ -47,6 +50,13 @@ const App = () => {
           <Route path="devops/docker" element={<DockerPage />} />
           <Route path="devops/kubernetes" element={<KubernetesPage />} />
           <Route path="devops/terminal" element={<TerminalPage />} />
+
+          {/* Tools */}
+          <Route path="tools/sagemath" element={<SageMath />} />
+          <Route path="tools/jupyter" element={<Jupyter />} />
+
+          {/* STL Files */}
+          <Route path="stl" element={<FileBrowserPage />} />
 
           {/* About */}
           <Route path="about" element={<About />} />
