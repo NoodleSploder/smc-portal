@@ -1,5 +1,6 @@
 
 // React
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import {  useSelector } from 'react-redux';
 import { RootState } from './components/data/store';
@@ -21,10 +22,17 @@ import ZOS31page from './pages/mainframes/zos/ZOS31Page';
 import SageMath from './pages/tools/sagemath';
 import Jupyter from './pages/tools/jupyter';
 import FileBrowserPage from './components/ui/FileBrowserPage';
+import STLViewer from './components/ui/STLViewer';
+import OBJViewer from './components/ui/OBJViewer';
+import ImageViewer from './components/ui/ImageViewer';
+import PDFViewer from './components/ui/PDFViewer';
+
+
 
 
 const App = () => {
   const { loading, error } = useSelector((state: RootState) => state.player);
+  const [selectedPath, setSelectedPath] = useState<string | null>(null);
 
   if (loading) return <LoadingSpinner />;
   if (error) return <ErrorPage message={error} />;
@@ -56,7 +64,37 @@ const App = () => {
           <Route path="tools/jupyter" element={<Jupyter />} />
 
           {/* STL Files */}
-          <Route path="stl" element={<FileBrowserPage />} />
+          <Route
+              path="stl"
+              element={
+                <div style={{ display: 'flex', height: '100vh' }}>
+                  <FileBrowserPage
+                    onSelect={(path: string) => {
+                      setSelectedPath(path);
+                    }}
+                  />
+                    {selectedPath && selectedPath.toLowerCase().endsWith('.obj') && (
+                      <OBJViewer key={selectedPath} path={selectedPath} />
+                    )}
+
+                    {selectedPath && selectedPath.endsWith('.stl') && (
+                      <STLViewer key={selectedPath} path={selectedPath} />
+                    )}
+
+                    {selectedPath && (
+                      selectedPath.endsWith('.png') ||
+                      selectedPath.endsWith('.jpg') ||
+                      selectedPath.endsWith('.jpeg')
+                    ) && (
+                      <ImageViewer key={selectedPath} path={selectedPath} />
+                    )}
+
+                    {selectedPath && selectedPath.endsWith('.pdf') && (
+                      <PDFViewer key={selectedPath} path={selectedPath} />
+                    )}
+                </div>
+              }
+            />
 
           {/* About */}
           <Route path="about" element={<About />} />

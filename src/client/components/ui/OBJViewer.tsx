@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/react';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 type Props = {
@@ -9,7 +9,7 @@ type Props = {
 };
 
 
-export default function STLViewer({ path }: Props) {
+export default function OBJViewer({ path }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -35,39 +35,30 @@ export default function STLViewer({ path }: Props) {
     controls.enableZoom = true; // Optional
     controls.autoRotate = false; // <-- no auto spin
 
-    const loader = new STLLoader();
-    loader.load(`/api/download?path=${encodeURIComponent(path)}`, geometry => {
-      const material = new THREE.MeshNormalMaterial();
-      const mesh = new THREE.Mesh(geometry, material);
-      scene.add(mesh);
+    const loader = new OBJLoader();
+    loader.load(`/api/download?path=${encodeURIComponent(path)}`, object => {
+    scene.add(object);
 
-      // Center and fit camera
-      geometry.computeBoundingBox();
-      const center = new THREE.Vector3();
-      geometry.boundingBox?.getCenter(center);
-      mesh.geometry.center();
+    // Optional: compute box from whole object
+    const box = new THREE.Box3().setFromObject(object);
+    const size = new THREE.Vector3();
+    box.getSize(size);
 
-      const size = new THREE.Vector3();
-      geometry.boundingBox?.getSize(size);
-      const maxDim = Math.max(size.x, size.y, size.z);
-      const fov = camera.fov * (Math.PI / 180);
-      let cameraZ = Math.abs(maxDim / 2 * Math.tan(fov * 2));
-      cameraZ *= 2.5;
-      camera.position.z = cameraZ;
+    const center = new THREE.Vector3();
+    box.getCenter(center);
+    object.position.sub(center); // center it
 
-      camera.lookAt(0, 0, 0);
-      controls.target.set(0, 0, 0);
+    // Camera fitting
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const fov = camera.fov * (Math.PI / 180);
+    let cameraZ = Math.abs(maxDim / 2 * Math.tan(fov * 2));
+    cameraZ *= 2.5;
 
-      const ambientLight = new THREE.AmbientLight(0xffffff, 1);
-      scene.add(ambientLight);
-
-      const animate = () => {
-        requestAnimationFrame(animate);
-        controls.update();
-        renderer.render(scene, camera);
-      };
-      animate();
+    camera.position.set(0, 0, cameraZ);
+    camera.lookAt(0, 0, 0);
+    controls.target.set(0, 0, 0);
     });
+
 
     const handleResize = () => {
       if (!containerRef.current) return;

@@ -9,10 +9,19 @@ import ejs from 'ejs';
 import * as http from 'http';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import fs from 'fs/promises';
+import * as fs from 'fs/promises';
+import type { Request, Response } from 'express';
 
 // TERMINAL
 import { setupTmuxWebSocket } from './tmuxSocket';
+
+// ARCHIVE BROWSING
+//import Seven from 'node-7z';
+//import sevenBin from '7zip-bin'
+const Seven = require('node-7z');
+//import extractFull from 'node-7z';
+
+//import { ParsedQs } from 'qs';
 
 (async () => {
   try {
@@ -22,8 +31,6 @@ import { setupTmuxWebSocket } from './tmuxSocket';
     process.exit(1);
   }
 })();
-
-
 
 declare module 'express-session' {
   /* eslint-disable-next-line @typescript-eslint/no-empty-object-type */
@@ -105,8 +112,53 @@ const setupRoutes = (app: express.Application) => {
     }
   });
 
+  // Compressed File Browser
+  app.get('/api/browse-archive', async (req: Request, res: Response) => {
+    const { archive, path: subPath } = req.query;
+    if (!archive || typeof archive !== 'string') {
+      return res.status(400).json({ listing: [], error: 'Missing archive parameter' });
+    }
+    const archiveFile = decodeURIComponent(archive);
+    const archivePath = path.normalize(path.join(BASE_DIR, archiveFile));
+    const ext = archive.split('.').pop()?.toLowerCase() || '';
+    const sub = typeof subPath === 'string' ? subPath : '';
+    try {
+      if (ext === 'zip' || ext === '7z' || ext === 'rar') {
+        const files: { name: string; type: string }[] = [];
+        const stream = Seven.list(archivePath);
+
+        stream.on('data', (entry: any) => {
+          if (entry.file) {
+            const entryFile = entry.file as string;
+            if (entryFile.startsWith(sub)) {
+              const name = entryFile.slice(sub.length);
+              if (name.length > 0) {
+                files.push({
+                  name,
+                  type: name.includes('/') ? 'directory' : 'file',
+                });
+              }
+            }
+          }
+        });
+        stream.on('end', () => {
+          return res.json({ listing: files });
+        });
+        stream.on('error', (err: Error) => {
+          console.error(err);
+          return res.status(500).json({ listing: [], error: 'Failed to read 7z archive' });
+        });
+        return; // prevent falling through
+      }
+      return res.status(400).json({ listing: [], error: `Unsupported archive type: ${ext}` });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ listing: [], error: 'Error reading archive' });
+    }
+  });
+
   // Download endpoint
-  app.get('/api/download', (req, res) => {
+  app.get('/api/download_backup_v1', (req, res) => {
     const subPath = typeof req.query.path === 'string' ? req.query.path : '';
     const filePath = path.join(BASE_DIR, subPath);
 
@@ -114,6 +166,66 @@ const setupRoutes = (app: express.Application) => {
       return res.status(400).send('Invalid path');
     }
     res.download(filePath);
+  });
+
+  // Download Endpoint
+  app.get('/api/download', async (req, res) => {
+    const { archive, path: entryPath } = req.query;
+
+    if (typeof archive !== 'string' || typeof entryPath !== 'string') {
+      return res.status(400).send('Missing or invalid archive/path');
+    }
+
+    const ext = archive.split('.').pop()?.toLowerCase();
+    const archivePath = path.resolve(archive);
+
+    if (ext === 'zip' || ext === '7z' || ext === 'rar') {
+      const tempOut = `/tmp/extract-${Date.now()}`;
+      const extractor = Seven.extractFull(
+        archivePath,
+        tempOut,
+        {
+          $progress: true,
+          recursive: true,
+          $cherryPick: [entryPath],
+        }
+      );
+
+      extractor.on('end', () => {
+        const filePath = path.join(tempOut, entryPath);
+        res.sendFile(filePath, err => {
+          if (err) {
+            console.error(err);
+            res.status(500).send('Failed to send extracted file');
+          }
+        });
+      });
+
+      extractor.on('error', (err: any) => {
+        console.error(err);
+        res.status(500).send('Failed to extract file');
+      });
+
+      return;
+    }
+
+    // Fallback for plain files
+    const filePath = path.resolve(BASE_DIR, entryPath);
+    res.sendFile(filePath);
+  });
+
+
+
+  // File: inline preview
+  app.get('/api/file', (req, res) => {
+    const subPath = typeof req.query.path === 'string' ? req.query.path : '';
+    const filePath = path.join(BASE_DIR, subPath);
+
+    if (!filePath.startsWith(BASE_DIR)) {
+      return res.status(400).send('Invalid path');
+    }
+
+    res.sendFile(filePath); // Browser handles PDF/image inline
   });
 
 };
@@ -131,9 +243,6 @@ const startServer = () => {
   setupTmuxWebSocket(server);
 
   const port = parseInt(process.env.PORT ?? DEFAULT_PORT, BASE);
-  //const displayPort = new Intl.NumberFormat('en-US', {
-  //  useGrouping: false,
-  //}).format(port);
 
   ViteExpress.bind(app, server); // ✅ This attaches Vite dev server to your HTTP server.
 
@@ -141,25 +250,37 @@ const startServer = () => {
     console.log(`Server listening on http://localhost:${port}`);
   });
 
-  //ViteExpress.listen(app, port, () => {
-    // eslint-disable-next-line no-console
-  //  console.log(
-  //    `${process.env.NODE_ENV ?? ''} Server is listening on ${displayPort}.`
-  //  );
-  //});
-
   // Proxy WebSocket connections
   ViteExpress.config({
-    //server: {
-    //  proxy: {
-    //    '/wss': {
-    //      target: 'ws://localhost:3000', // Proxy to your WebSocket server
-    //      ws: true,
-    //    },
-    //  },
-    //},
   });
 
 };
 
 startServer(); // Start the server
+
+
+            /*
+
+      import AdmZip from 'adm-zip';
+
+      if (ext === 'zip') {
+        const zip = new AdmZip(archivePath);
+        const entries = zip.getEntries();
+
+        const listing = entries
+          .filter((e) => e.entryName.startsWith(sub) && e.entryName !== sub)
+          .map((e) => {
+            const rest = e.entryName.slice(sub.length).replace(/^\/+/, '');
+            const parts = rest.split('/');
+            return {
+              name: parts[0],
+              type: parts.length > 1 || e.isDirectory ? 'directory' : 'file'
+            };
+          })
+          .filter(
+            (v, i, a) => a.findIndex((t) => t.name === v.name && t.type === t.type) === i
+          );
+
+        res.json({ listing });
+      }
+      */

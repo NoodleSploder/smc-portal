@@ -1,105 +1,115 @@
-import {
-  Box,
-  Text,
-  Link,
-  VStack,
-  Breadcrumb,
-} from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Box, Link, VStack, Breadcrumb } from '@chakra-ui/react';
 
-type Item = {
+type FileItem = {
   name: string;
   type: 'file' | 'directory';
 };
 
-export default function FileBrowserPage() {
+type Props = {
+  onSelect: (path: string) => void;
+};
 
-  const [selectedFile, setSelectedFile] = useState<string | null>(null);
-
+export default function FileBrowserPage({ onSelect }: Props) {
   const [path, setPath] = useState('');
-  const [listing, setListing] = useState<Item[]>([]);
+  const [archive, setArchive] = useState<string | null>(null);
+  const [listing, setListing] = useState<FileItem[]>([]);
 
   const fetchListing = async (subPath: string) => {
-
-    const res = await fetch(`/api/browse?path=${encodeURIComponent(subPath)}`);
-
-    if (!res.ok) {
-      console.error('Bad response:', res.status);
-      return;
+    let url = '';
+    if (archive) {
+      url = `/api/browse-archive?archive=${encodeURIComponent(
+        archive
+      )}&path=${encodeURIComponent(subPath)}`;
+    } else {
+      url = `/api/browse?path=${encodeURIComponent(subPath)}`;
     }
 
-    const data = await res.json();
-    setPath(data.path);
-    setListing(data.listing);
+    const res = await fetch(url);
+    const data: { listing: FileItem[] } = await res.json();
 
+    setPath(subPath);
+    setListing(data.listing || []);
   };
 
   useEffect(() => {
     fetchListing('');
-  }, []);
+  }, [archive]);
 
   const parts = path.split('/').filter(Boolean);
 
   return (
-    <Box p={4}>
+    <Box flex="1" overflow="auto" p={4} maxW="400px">
+      <Breadcrumb.Root>
+        <Breadcrumb.Separator>\</Breadcrumb.Separator>
+        <Breadcrumb.Item>
+          <Breadcrumb.Link onClick={() => fetchListing('')}>
+            Root
+          </Breadcrumb.Link>
+        </Breadcrumb.Item>
 
-      <Box display="flex" width="100%" height="100%">
-        {/* LEFT: File Tree */}
-        <Box flex="1" overflow="auto">
+        {parts.map((part, idx) => {
+          const subPath = parts.slice(0, idx + 1).join('/');
+          return (
+            <Breadcrumb.Item key={idx}>
+              <Breadcrumb.Separator>\</Breadcrumb.Separator>
+              <Breadcrumb.Link onClick={() => fetchListing(subPath)}>
+                {part}
+              </Breadcrumb.Link>
+            </Breadcrumb.Item>
+          );
+        })}
+      </Breadcrumb.Root>
 
-          <Breadcrumb.Root mb={4}>
-            <Breadcrumb.List>
-              <Breadcrumb.Item>
-                <Breadcrumb.Link onClick={() => fetchListing('')}>Root</Breadcrumb.Link>
-              </Breadcrumb.Item>
-              {parts.map((part, idx) => (
-                <Breadcrumb.Item key={idx}>
-                  <Breadcrumb.Link
-                    onClick={() =>
-                      fetchListing(parts.slice(0, idx + 1).join('/'))
-                    }
-                  >
-                    {part}
-                  </Breadcrumb.Link>
-                </Breadcrumb.Item>
-              ))}
-            </Breadcrumb.List>
-          </Breadcrumb.Root>
+      <VStack align="start" >
+        {listing.map((item) => {
+          const itemPath = path ? `${path}/${item.name}` : item.name;
 
-          <VStack align="start">
-            {listing.map((item) =>
-              item.type === 'directory' ? (
-                <Text
-                  key={item.name}
-                  cursor="pointer"
-                  fontWeight="bold"
-                  onClick={() =>
-                    fetchListing(path ? `${path}/${item.name}` : item.name)
-                  }
-                >
-                  📁 {item.name}
-                </Text>
-              ) : (
-                <Link
-                  key={item.name}
-                  href={`/api/download?path=${encodeURIComponent(
-                    path ? `${path}/${item.name}` : item.name
-                  )}`}
-                  //isExternal
-                >
-                  📄 {item.name}
-                </Link>
-              )
-            )}
-          </VStack>
-                    {/* Your current tree code */}
-        </Box>
+          if (item.type === 'directory') {
+            return (
+              <Link
+                key={item.name}
+                cursor="pointer"
+                onClick={() => fetchListing(itemPath)}
+              >
+                📂 {item.name}
+              </Link>
+            );
+          }
 
-        {/* RIGHT: 3D Viewer */}
-        <Box flex="2" bg="gray.900">
-          <STLViewer path={selectedFilePath} />
-        </Box>
-      </Box>
+          if (
+            !archive &&
+            (item.name.toLowerCase().endsWith('.zip') ||
+              item.name.toLowerCase().endsWith('.7z'))
+          ) {
+            return (
+              <Link
+                key={item.name}
+                cursor="pointer"
+                onClick={() => {
+                  setArchive(itemPath);
+                  setPath('');
+                }}
+              >
+                📦 {item.name} [Enter]
+              </Link>
+            );
+          }
+
+          return (
+            <Box key={item.name}>
+              <Link
+                href={`/api/download?path=${encodeURIComponent(itemPath)}`}
+              >
+                {item.name} [Download]
+              </Link>{' '}
+              <Link cursor="pointer" onClick={() => onSelect(itemPath)}>
+                [View]
+              </Link>
+            </Box>
+          );
+        })}
+      </VStack>
     </Box>
   );
 }
